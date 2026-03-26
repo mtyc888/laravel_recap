@@ -41,4 +41,16 @@ class User extends Authenticatable
     public function invoices(): HasMany{
         return $this->hasMany(Invoice::class);
     }
+    public function tokens(): HasMany{
+        return $this->hasMany(PersonalAccessToken::class);
+    }
+    public function createToken(string $name, ?int $expiresInMinutes = null):string{
+        $plainToken = bin2hex(random_bytes(36));
+        $this->tokens()->create([
+            'name' => $name,
+            'token' => $plainToken,
+            'expires_at' => $expiresInMinutes ? now()->addMinutes($expiresInMinutes) : null
+        ]);
+        return $plainToken;
+    }
 }
